@@ -3,7 +3,7 @@
   "displayName": "Notebook Minimap",
   "description": "A rendered minimap for Jupyter notebooks: see the whole notebook with plots in the sidebar, where you are, and jump anywhere.",
   "version": "0.4.0",
-  "publisher": "local",
+  "publisher": "mriluca",
   "license": "MIT",
   "icon": "images/icon.png",
   "galleryBanner": {
@@ -11,6 +11,14 @@
     "theme": "dark"
   },
   "pricing": "Free",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LucaNagel/notebook-minimap.git"
+  },
+  "bugs": {
+    "url": "https://github.com/LucaNagel/notebook-minimap/issues"
+  },
+  "homepage": "https://github.com/LucaNagel/notebook-minimap#readme",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -194,7 +202,7 @@
     "watch": "esbuild src/extension.ts --bundle --platform=node --format=cjs --external:vscode --outfile=dist/extension.js --sourcemap --watch",
     "typecheck": "tsc --noEmit",
     "vscode:prepublish": "npm run build",
-    "package": "vsce package --no-dependencies --allow-missing-repository",
+    "package": "vsce package --no-dependencies",
     "pretest": "npm run build && esbuild test/run.ts --bundle --platform=node --outfile=test/out/run.js --log-level=warning",
     "test": "node test/out/run.js test/fixtures/sample.ipynb test/out/fixture.json && node -e \"process.env.NODE_PATH='test/mock';require('module').Module._initPaths();require('./test/smoke.js')\"",
     "test:webview": "npm test && python3 test/shoot.py",
@@ -204,7 +212,7 @@
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^20.0.0",
     "@types/vscode": "~1.85.0",
-    "@vscode/vsce": "^3.0.0",
+    "@vscode/vsce": "^4.1.0",
     "esbuild": "^0.24.0",
     "highlight.js": "^11.10.0",
     "markdown-it": "^14.1.0",
