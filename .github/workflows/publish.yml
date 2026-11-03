@@ -1,0 +1,41 @@
+# Publishes to the VS Code Marketplace when a GitHub release is published.
+# Authentication uses Marketplace Trusted Publishing (no token stored here):
+# the publisher "mriluca" needs a Trusted Publishing policy for
+# LucaNagel / notebook-minimap / publish.yml.
+name: Publish
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+
+      - name: Check that the release tag matches package.json
+        if: github.event_name == 'release'
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          tag="${GITHUB_REF_NAME#v}"
+          if [ "$tag" != "$version" ]; then
+            echo "::error::Release tag $GITHUB_REF_NAME does not match package.json version $version"
+            exit 1
+          fi
+
+      - name: Publish to the VS Code Marketplace
+        run: npx vsce publish --oidc --no-dependencies
