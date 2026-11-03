@@ -1,0 +1,373 @@
+:root {
+  --mm-code-font: var(--vscode-editor-font-family, Menlo, Consolas, monospace);
+  --mm-code-size: 13px;
+  --mm-code-line: 20px;
+  --mm-md-size: 15px;
+  --mm-bg: var(--vscode-sideBar-background, var(--vscode-editor-background, #1e1e1e));
+  --mm-fg: var(--vscode-editor-foreground, var(--vscode-foreground, #ccc));
+  --mm-cell-bg: var(--vscode-notebook-cellEditorBackground, var(--vscode-editor-background, #1e1e1e));
+  --mm-border: var(--vscode-notebook-cellBorderColor, var(--vscode-panel-border, #444));
+  --mm-accent: var(--vscode-focusBorder, #3794ff);
+  --mm-selected: var(--vscode-notebook-focusedCellBorder, var(--mm-accent));
+  --mm-dim: color-mix(in srgb, var(--mm-bg) 55%, transparent);
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--mm-bg);
+  color: var(--mm-fg);
+}
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+#empty {
+  padding: 12px 16px;
+  color: var(--vscode-descriptionForeground);
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size, 13px);
+}
+body.has-cells #empty {
+  display: none;
+}
+body:not(.has-cells) #badge {
+  display: none;
+}
+
+#scroller {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+  box-sizing: border-box;
+  outline: none;
+}
+
+/* The visible "page": stays put while the scroller scrolls; each column
+   shows the next slice of one long strip (the notebook), like newspaper
+   columns. Scrolling just moves the strips. */
+#stage {
+  position: sticky;
+  top: 0;
+  overflow: hidden;
+  cursor: pointer;
+}
+#spacer {
+  width: 1px;
+}
+.col {
+  position: absolute;
+  overflow: hidden;
+  background: var(--vscode-editor-background, var(--mm-bg));
+}
+.col + .col {
+  box-shadow: -3px 0 0 -2px var(--mm-border);
+}
+.strip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+}
+
+.doc {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  background: var(--vscode-editor-background, var(--mm-bg));
+  color: var(--mm-fg);
+}
+
+.box {
+  position: absolute;
+  left: 0;
+  border: 2px solid var(--mm-accent);
+  border-radius: 3px;
+  box-sizing: border-box;
+  pointer-events: none;
+  box-shadow: 0 0 0 100000px var(--mm-dim);
+  transition: top 90ms ease-out, height 90ms ease-out;
+}
+
+/* Headings of the current section, like VS Code's sticky scroll. */
+#sticky {
+  flex: 0 0 auto;
+  padding: 3px 0 4px;
+  border-bottom: 1px solid var(--vscode-sideBarSectionHeader-border, var(--mm-border));
+  background: var(--mm-bg);
+  box-shadow: 0 2px 4px -2px var(--vscode-widget-shadow, rgba(0, 0, 0, 0.4));
+  font-family: var(--vscode-font-family);
+  font-size: var(--mm-strip-size, 12px);
+  line-height: 1.5;
+  cursor: pointer;
+  z-index: 2;
+}
+#sticky[hidden],
+body:not(.has-cells) #sticky {
+  display: none;
+}
+.crumb {
+  padding-right: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--vscode-descriptionForeground, #9d9d9d);
+}
+.crumb.current {
+  color: var(--vscode-foreground, #ccc);
+  font-weight: 600;
+}
+.crumb:hover {
+  background: var(--vscode-list-hoverBackground, rgba(128, 128, 128, 0.15));
+}
+
+/* Selected cell(s), drawn unscaled on top of the minimap. */
+.sel-cell {
+  position: absolute;
+  left: 0;
+  box-sizing: border-box;
+  border: 1.5px solid var(--mm-selected);
+  border-left-width: 4px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--mm-selected) 22%, transparent);
+  pointer-events: none;
+}
+
+#badge {
+  position: fixed;
+  right: 10px;
+  bottom: 6px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  font-family: var(--vscode-font-family);
+  font-size: 10px;
+  color: var(--vscode-badge-foreground, #fff);
+  background: var(--vscode-badge-background, #4d4d4d);
+  opacity: 0.85;
+  pointer-events: none;
+}
+#badge.clickable {
+  pointer-events: auto;
+  cursor: pointer;
+}
+#badge.clickable:hover {
+  opacity: 1;
+}
+
+/* ----------------------------------------------------------------- cells
+   Sizes are in unscaled notebook pixels and roughly follow VS Code's
+   notebook layout so the proportions in the minimap match the editor. */
+
+.cell {
+  position: relative;
+  padding: 5px 10px 5px 8px;
+}
+.cell:hover {
+  background: var(--vscode-list-hoverBackground, rgba(128, 128, 128, 0.12));
+}
+
+.input {
+  display: flex;
+  align-items: flex-start;
+}
+.gutter {
+  flex: 0 0 40px;
+  padding-top: 10px;
+  font-family: var(--mm-code-font);
+  font-size: calc(var(--mm-code-size) * 0.85);
+  color: var(--vscode-descriptionForeground, #888);
+}
+pre.code {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--mm-border);
+  border-radius: 4px;
+  background: var(--mm-cell-bg);
+  font-family: var(--mm-code-font);
+  font-size: var(--mm-code-size);
+  line-height: var(--mm-code-line);
+  white-space: pre;
+  overflow: hidden;
+}
+
+.outputs {
+  margin-left: 40px;
+  padding: 6px 0 2px;
+}
+.out {
+  margin: 4px 0;
+  overflow: hidden;
+}
+.out pre {
+  margin: 0;
+  font-family: var(--mm-code-font);
+  font-size: var(--mm-code-size);
+  line-height: var(--mm-code-line);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.out-stderr {
+  background: var(--vscode-inputValidation-warningBackground, rgba(255, 200, 0, 0.08));
+}
+.out-error pre {
+  color: var(--vscode-errorForeground, #f48771);
+}
+.out-trunc {
+  font-family: var(--vscode-font-family);
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground, #888);
+  padding: 4px 0;
+}
+.out-image img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+.out-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--mm-border);
+  border-radius: 4px;
+  font-family: var(--vscode-font-family);
+  font-size: 14px;
+  color: var(--vscode-descriptionForeground, #888);
+}
+.out-html table {
+  border-collapse: collapse;
+  font-family: var(--vscode-font-family);
+  font-size: 12px;
+}
+.out-html th,
+.out-html td {
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--mm-border);
+  text-align: right;
+}
+
+/* ------------------------------------------------------------- markdown */
+
+.md {
+  font-family: var(--vscode-markdown-font-family, var(--vscode-font-family, -apple-system, sans-serif));
+  font-size: var(--mm-md-size);
+  line-height: 1.5;
+  padding: 0 8px 0 40px;
+  overflow-wrap: anywhere;
+}
+.md-empty {
+  min-height: 24px;
+}
+.md > :first-child {
+  margin-top: 0;
+}
+.md > :last-child {
+  margin-bottom: 0;
+}
+.md h1 { font-size: 2em; margin: 0.5em 0 0.3em; }
+.md h2 { font-size: 1.6em; margin: 0.5em 0 0.3em; }
+.md h3 { font-size: 1.3em; margin: 0.5em 0 0.3em; }
+.md h4, .md h5, .md h6 { font-size: 1.1em; margin: 0.5em 0 0.3em; }
+.md h1, .md h2 {
+  border-bottom: 1px solid var(--mm-border);
+  padding-bottom: 0.2em;
+}
+.md code {
+  font-family: var(--mm-code-font);
+  font-size: 0.9em;
+}
+.md pre {
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: var(--mm-cell-bg);
+  overflow: hidden;
+}
+.md img {
+  max-width: 100%;
+}
+.md blockquote {
+  margin: 0;
+  padding-left: 12px;
+  border-left: 4px solid var(--mm-border);
+}
+
+/* -------------------------------------------- syntax colours (highlight.js) */
+
+.hljs-comment, .hljs-quote {
+  color: var(--vscode-symbolIcon-colorForeground, #6a9955);
+  font-style: italic;
+}
+.hljs-keyword, .hljs-selector-tag, .hljs-literal, .hljs-meta .hljs-keyword {
+  color: var(--vscode-symbolIcon-keywordForeground, #c586c0);
+}
+.hljs-string, .hljs-regexp, .hljs-meta .hljs-string {
+  color: var(--vscode-debugTokenExpression-string, #ce9178);
+}
+.hljs-number {
+  color: var(--vscode-debugTokenExpression-number, #b5cea8);
+}
+.hljs-title, .hljs-title.function_, .hljs-section {
+  color: var(--vscode-symbolIcon-functionForeground, #dcdcaa);
+}
+.hljs-built_in, .hljs-type, .hljs-title.class_ {
+  color: var(--vscode-symbolIcon-classForeground, #4ec9b0);
+}
+.hljs-params, .hljs-variable, .hljs-attr {
+  color: var(--vscode-symbolIcon-variableForeground, #9cdcfe);
+}
+.hljs-meta {
+  color: var(--vscode-symbolIcon-constantForeground, #569cd6);
+}
+
+/* HTML outputs (e.g. ipympl's figure snapshot) must not overflow the cell. */
+.out-html div,
+.out-html img {
+  max-width: 100%;
+}
+.out-html img {
+  height: auto;
+}
+
+/* Readable headings: sized in screen pixels (--mm-h-base is set from the
+   current zoom), never smaller than their natural size, at most 2 lines. */
+body.big-headings .md h1,
+body.big-headings .md h2,
+body.big-headings .md h3,
+body.big-headings .md h4,
+body.big-headings .md h5,
+body.big-headings .md h6 {
+  margin: 0.25em 0 0.15em;
+  line-height: 1.2;
+  border-bottom: none;
+}
+body.clamp-headings .md h1,
+body.clamp-headings .md h2,
+body.clamp-headings .md h3,
+body.clamp-headings .md h4,
+body.clamp-headings .md h5,
+body.clamp-headings .md h6 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--mm-h-lines, 2);
+  overflow: hidden;
+}
+/* Readable body text, sized like the headings (screen px via --mm-t-base). */
+body.big-text .md {
+  font-size: max(var(--mm-md-size), var(--mm-t-base));
+  line-height: 1.3;
+}
+body.big-headings .md h1 { font-size: max(2em, calc(var(--mm-h-base) * 1.3)); }
+body.big-headings .md h2 { font-size: max(1.6em, calc(var(--mm-h-base) * 1.15)); }
+body.big-headings .md h3 { font-size: max(1.3em, var(--mm-h-base)); }
+body.big-headings .md h4,
+body.big-headings .md h5,
+body.big-headings .md h6 { font-size: max(1.1em, calc(var(--mm-h-base) * 0.92)); }

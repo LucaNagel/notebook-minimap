@@ -1,0 +1,213 @@
+{
+  "name": "notebook-minimap",
+  "displayName": "Notebook Minimap",
+  "description": "A rendered minimap for Jupyter notebooks: see the whole notebook with plots in the sidebar, where you are, and jump anywhere.",
+  "version": "0.4.0",
+  "publisher": "local",
+  "license": "MIT",
+  "icon": "images/icon.png",
+  "galleryBanner": {
+    "color": "#1e222c",
+    "theme": "dark"
+  },
+  "pricing": "Free",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Notebooks",
+    "Visualization"
+  ],
+  "keywords": [
+    "jupyter",
+    "notebook",
+    "ipynb",
+    "minimap",
+    "overview",
+    "navigation",
+    "outline",
+    "matplotlib"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onNotebook:jupyter-notebook"
+  ],
+  "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "type": "webview",
+          "id": "notebookMinimap.view",
+          "name": "Notebook Minimap"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "notebookMinimap.toggleColumns",
+        "title": "Toggle Columns (1 / 2 / 3)",
+        "category": "Notebook Minimap",
+        "icon": "$(split-horizontal)"
+      },
+      {
+        "command": "notebookMinimap.refresh",
+        "title": "Refresh",
+        "category": "Notebook Minimap",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "notebookMinimap.zoomIn",
+        "title": "Show Less Context",
+        "category": "Notebook Minimap",
+        "icon": "$(zoom-in)"
+      },
+      {
+        "command": "notebookMinimap.zoomOut",
+        "title": "Show More Context",
+        "category": "Notebook Minimap",
+        "icon": "$(zoom-out)"
+      },
+      {
+        "command": "notebookMinimap.openSettings",
+        "title": "Open Settings",
+        "category": "Notebook Minimap",
+        "icon": "$(gear)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "notebookMinimap.toggleColumns",
+          "when": "view == notebookMinimap.view",
+          "group": "navigation@1"
+        },
+        {
+          "command": "notebookMinimap.zoomIn",
+          "when": "view == notebookMinimap.view",
+          "group": "navigation@2"
+        },
+        {
+          "command": "notebookMinimap.zoomOut",
+          "when": "view == notebookMinimap.view",
+          "group": "navigation@3"
+        },
+        {
+          "command": "notebookMinimap.refresh",
+          "when": "view == notebookMinimap.view",
+          "group": "navigation@4"
+        },
+        {
+          "command": "notebookMinimap.openSettings",
+          "when": "view == notebookMinimap.view",
+          "group": "navigation@9"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Notebook Minimap",
+      "properties": {
+        "notebookMinimap.columns": {
+          "type": "integer",
+          "default": 1,
+          "minimum": 1,
+          "maximum": 6,
+          "markdownDescription": "Number of columns. With more than one, the notebook continues from the bottom of one column at the top of the next, like pages side by side. The columns button in the view title cycles 1 \u2192 2 \u2192 3.",
+          "order": 0
+        },
+        "notebookMinimap.contextFactor": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 20,
+          "markdownDescription": "How much of the notebook the minimap shows, as a multiple of the visible editor height (`2` = twice what you see on screen). `0` scales the notebook to fill the panel width. The zoom buttons in the view title and Ctrl/Cmd + mouse wheel change this value; clicking the zoom badge returns to `0`.",
+          "order": 1
+        },
+        "notebookMinimap.headingSize": {
+          "type": "number",
+          "default": 12,
+          "minimum": 0,
+          "maximum": 40,
+          "markdownDescription": "Screen size in pixels of Markdown headings inside the minimap, independent of the zoom, so section titles stay readable (`h1` a bit larger, `h4`+ a bit smaller). `0` keeps them at their scaled-down natural size.",
+          "order": 2
+        },
+        "notebookMinimap.headingMaxLines": {
+          "type": "integer",
+          "default": 2,
+          "minimum": 0,
+          "maximum": 10,
+          "markdownDescription": "Longer headings in the minimap are cut off with \u201c\u2026\u201d after this many lines. `0` shows them in full.",
+          "order": 3
+        },
+        "notebookMinimap.markdownTextSize": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 40,
+          "markdownDescription": "Screen size in pixels of normal Markdown text (paragraphs, lists) inside the minimap, independent of the zoom. `0` keeps it at its scaled-down natural size.",
+          "order": 4
+        },
+        "notebookMinimap.showHeadings": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show the Markdown headings of the current section above the minimap (like sticky scroll).",
+          "order": 5
+        },
+        "notebookMinimap.headingStripFontSize": {
+          "type": "number",
+          "default": 12,
+          "minimum": 8,
+          "maximum": 30,
+          "markdownDescription": "Font size in pixels of the section headings shown above the minimap.",
+          "order": 6
+        },
+        "notebookMinimap.notebookWidth": {
+          "type": "number",
+          "default": 1000,
+          "minimum": 300,
+          "markdownDescription": "Width in pixels at which the minimap lays out the notebook. Set it to roughly the width of your notebook editor so images and Markdown wrap like the real notebook.",
+          "order": 7
+        },
+        "notebookMinimap.estimatedViewportHeight": {
+          "type": "number",
+          "default": 1000,
+          "minimum": 200,
+          "markdownDescription": "Approximate height in pixels of the visible notebook area. VS Code does not expose it to extensions, so adjust this to your screen if the minimap shows noticeably more or less context than `contextFactor` suggests.",
+          "order": 8
+        },
+        "notebookMinimap.renderHtmlOutputs": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Render `text/html` outputs (e.g. pandas tables). When off, or when an HTML output is longer than `maxHtmlOutputLength`, the plain-text version is shown instead.",
+          "order": 9
+        },
+        "notebookMinimap.maxHtmlOutputLength": {
+          "type": "number",
+          "default": 20000,
+          "markdownDescription": "HTML outputs longer than this many characters (e.g. xarray reprs) are shown as plain text.",
+          "order": 10
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "esbuild src/extension.ts --bundle --platform=node --format=cjs --external:vscode --outfile=dist/extension.js --minify --sourcemap",
+    "watch": "esbuild src/extension.ts --bundle --platform=node --format=cjs --external:vscode --outfile=dist/extension.js --sourcemap --watch",
+    "typecheck": "tsc --noEmit",
+    "vscode:prepublish": "npm run build",
+    "package": "vsce package --no-dependencies --allow-missing-repository",
+    "pretest": "npm run build && esbuild test/run.ts --bundle --platform=node --outfile=test/out/run.js --log-level=warning",
+    "test": "node test/out/run.js test/fixtures/sample.ipynb test/out/fixture.json && node -e \"process.env.NODE_PATH='test/mock';require('module').Module._initPaths();require('./test/smoke.js')\"",
+    "test:webview": "npm test && python3 test/shoot.py",
+    "fixtures": "python3 test/make_notebook.py test/fixtures/sample.ipynb"
+  },
+  "devDependencies": {
+    "@types/markdown-it": "^14.1.2",
+    "@types/node": "^20.0.0",
+    "@types/vscode": "~1.85.0",
+    "@vscode/vsce": "^3.0.0",
+    "esbuild": "^0.24.0",
+    "highlight.js": "^11.10.0",
+    "markdown-it": "^14.1.0",
+    "typescript": "^5.6.0"
+  }
+}

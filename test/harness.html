@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="../media/minimap.css">
+  <style>
+    /* A subset of VS Code's Dark Modern theme variables. */
+    :root {
+      --vscode-font-family: -apple-system, "Segoe UI", sans-serif; --vscode-font-size: 13px;
+      --vscode-editor-font-family: Menlo, "DejaVu Sans Mono", monospace;
+      --vscode-sideBar-background: #181818; --vscode-editor-background: #1f1f1f;
+      --vscode-editor-foreground: #cccccc; --vscode-foreground: #cccccc;
+      --vscode-descriptionForeground: #9d9d9d; --vscode-focusBorder: #0078d4;
+      --vscode-notebook-cellEditorBackground: #181818; --vscode-notebook-cellBorderColor: #2b2b2b;
+      --vscode-badge-background: #616161; --vscode-badge-foreground: #f8f8f8;
+      --vscode-errorForeground: #f85149;
+    }
+  </style>
+</head>
+<body>
+  <div id="empty">Open a Jupyter notebook to see its minimap.</div>
+  <div id="sticky" hidden></div>
+  <div id="scroller"><div id="stage"></div><div id="spacer"></div></div>
+  <div id="badge"></div>
+  <script>
+    window.__posted = [];
+    window.acquireVsCodeApi = () => ({ postMessage: (m) => window.__posted.push(m), getState: () => undefined, setState() {} });
+    window.send = (m) => window.dispatchEvent(new MessageEvent('message', { data: m }));
+  </script>
+  <script src="../media/minimap.js"></script>
+</body>
+</html>
