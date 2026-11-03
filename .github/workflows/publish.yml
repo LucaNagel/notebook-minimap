@@ -1,12 +1,13 @@
-# Publishes to the VS Code Marketplace when a GitHub release is published.
+# Publishes to the VS Code Marketplace when a version tag is pushed:
+#   git tag v0.4.1 && git push origin v0.4.1
 # Authentication uses Marketplace Trusted Publishing (no token stored here):
 # the publisher "mriluca" needs a Trusted Publishing policy for
 # LucaNagel / notebook-minimap / publish.yml.
 name: Publish
 
 on:
-  release:
-    types: [published]
+  push:
+    tags: ['v*']
   workflow_dispatch:
 
 permissions:
@@ -27,13 +28,13 @@ jobs:
       - run: npm ci
       - run: npm test
 
-      - name: Check that the release tag matches package.json
-        if: github.event_name == 'release'
+      - name: Check that the tag matches package.json
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
           version="$(node -p "require('./package.json').version")"
           tag="${GITHUB_REF_NAME#v}"
           if [ "$tag" != "$version" ]; then
-            echo "::error::Release tag $GITHUB_REF_NAME does not match package.json version $version"
+            echo "::error::Tag $GITHUB_REF_NAME does not match package.json version $version"
             exit 1
           fi
 
