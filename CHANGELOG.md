@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.1
+
+- New icon.
+- Demo notebook with synthetic data in `examples/`.
+
 ## 0.4.0
 
 - Columns no longer get cropped when a fixed zoom factor is set; the zoom is limited to the column width.

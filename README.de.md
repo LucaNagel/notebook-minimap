@@ -4,7 +4,7 @@ Zeigt im Explorer-Seitenbereich eine verkleinerte, gerenderte Vorschau des aktiv
 
 ## Installieren
 
-**Fertiges Paket:** In VS Code `Cmd+Shift+P` → **Extensions: Install from VSIX…** → `notebook-minimap-0.4.0.vsix` wählen (ersetzt eine ältere Version). Danach erscheint im Explorer ein neuer Abschnitt **Notebook Minimap** (lässt sich wie die Outline per Drag & Drop verschieben, z. B. in die rechte Seitenleiste).
+**Fertiges Paket:** In VS Code `Cmd+Shift+P` → **Extensions: Install from VSIX…** → `notebook-minimap-0.4.1.vsix` wählen (ersetzt eine ältere Version). Danach erscheint im Explorer ein neuer Abschnitt **Notebook Minimap** (lässt sich wie die Outline per Drag & Drop verschieben, z. B. in die rechte Seitenleiste).
 
 **Aus dem Quellcode / zum Weiterentwickeln:**
 
@@ -32,6 +32,8 @@ npm run fixtures       # Testnotebook neu erzeugen (braucht numpy + matplotlib)
 - **Zahnrad-Button** in der Titelleiste öffnet alle Einstellungen der Minimap.
 - **Lupen-Buttons** in der Titelleiste des Abschnitts oder **Cmd/Strg + Mausrad** über der Minimap: mehr oder weniger Kontext. Ein Klick auf das Badge kehrt zur vollen Breite zurück.
 - Wer selbst in der Minimap scrollt, pausiert das automatische Mitlaufen für 2 Sekunden.
+
+Zum Ausprobieren `examples/minimap-demo.ipynb` öffnen: ein langes Notebook mit rund 30 Plots und synthetischen Daten. Neu erzeugen mit `python3 examples/build_demo.py examples/minimap-demo.ipynb` und danach „Run All“.
 
 ## Einstellungen
 
@@ -64,4 +66,5 @@ Schrift und Zeilenhöhe übernimmt die Minimap aus `editor.fontFamily`, `editor.
 - `src/render.ts` – macht aus einer Zelle HTML (markdown-it, highlight.js, Output-Auswahl, Bildgrößen aus dem PNG/JPEG-Header). Bilder werden per Inhalts-Hash nur einmal übertragen.
 - `media/minimap.js` / `minimap.css` – Webview: Layout in Notebook-Breite, Skalierung, Spalten (Spalte 2+ zeigen Kopien des gerenderten Notebooks, je um eine Spaltenhöhe versetzt), Kasten, Mitlaufen, Klick-Navigation, HTML-Sanitizing.
 - `test/` – `run.ts` (Renderer-Tests), `smoke.js` + `mock/vscode` (Extension gegen nachgebaute VS-Code-API), `harness.html` + `shoot.py` (Webview im Browser, Screenshots nach `test/out/`), `make_notebook.py` (erzeugt `fixtures/sample.ipynb`).
+- `examples/` – Demo-Notebook und das Skript, das es erzeugt; `images/draw_icon.py` zeichnet das Icon.
 - `README.md` ist die englische Seite für den Marketplace, `README.de.md` diese Anleitung.

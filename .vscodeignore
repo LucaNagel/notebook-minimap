@@ -8,3 +8,5 @@ tsconfig.json
 .gitignore
 README.de.md
 .github/**
+examples/**
+images/*.py

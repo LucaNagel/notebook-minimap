@@ -20,6 +20,8 @@ Open a Jupyter notebook. The **Notebook Minimap** view appears in the Explorer; 
 
 Title-bar buttons, from left: columns (1 → 2 → 3), less context, more context, refresh, settings. The badge in the corner shows the current zoom; click it to return to "fit width".
 
+To try it out, open [`examples/minimap-demo.ipynb`](examples/minimap-demo.ipynb): a long notebook with about 30 plots and synthetic data.
+
 ## Settings
 
 | Setting | Default | Description |

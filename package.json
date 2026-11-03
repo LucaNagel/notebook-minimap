@@ -2,7 +2,7 @@
   "name": "notebook-minimap",
   "displayName": "Notebook Minimap",
   "description": "A rendered minimap for Jupyter notebooks: see the whole notebook with plots in the sidebar, where you are, and jump anywhere.",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "publisher": "mriluca",
   "license": "MIT",
   "icon": "images/icon.png",
